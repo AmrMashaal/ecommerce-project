@@ -8,19 +8,19 @@ export const ProductSchema = Yup.object({
 
   slug: Yup.string()
     .trim()
-    .matches(/^[a-z0-9-]+$/, "Slug can only contain lowercase letters, numbers, and hyphens")
+    .matches(
+      /^[a-z0-9-]+$/,
+      "Slug can only contain lowercase letters, numbers, and hyphens"
+    )
     .required("Slug is required"),
 
   description: Yup.string()
     .max(5000, "Description cannot exceed 5000 characters")
     .required("Description is required"),
 
-  brand: Yup.string()
-    .trim()
-    .required("Brand is required"),
+  brand: Yup.string().trim().required("Brand is required"),
 
-  category: Yup.string()
-    .required("Category is required"),
+  category: Yup.string().required("Category is required"),
 
   price: Yup.number()
     .min(0, "Price cannot be negative")
@@ -35,9 +35,7 @@ export const ProductSchema = Yup.object({
     .min(0, "Stock cannot be negative")
     .required("Stock is required"),
 
-  sold: Yup.number()
-    .min(0, "Sold quantity cannot be negative")
-    .default(0),
+  sold: Yup.number().min(0, "Sold quantity cannot be negative").default(0),
 
   images: Yup.array()
     .of(
@@ -55,27 +53,23 @@ export const ProductSchema = Yup.object({
       Yup.object({
         color: Yup.string().optional(),
         size: Yup.string().optional(),
-        stock: Yup.number().min(0, "Variant stock cannot be negative").default(0),
-        price: Yup.number().min(0, "Variant price cannot be negative").optional(),
+        stock: Yup.number()
+          .min(0, "Variant stock cannot be negative")
+          .default(0),
+        price: Yup.number()
+          .min(0, "Variant price cannot be negative")
+          .optional(),
       })
     )
     .optional(),
 
   shipping: Yup.object({
-    weight: Yup.number()
-      .min(0, "Weight cannot be negative")
-      .optional(),
+    weight: Yup.number().min(0, "Weight cannot be negative").optional(),
     dimensions: Yup.object({
-      length: Yup.number().min(0, "Length cannot be negative").optional(),
       width: Yup.number().min(0, "Width cannot be negative").optional(),
       height: Yup.number().min(0, "Height cannot be negative").optional(),
     }).optional(),
   }).optional(),
-
-  averageRating: Yup.number()
-    .min(0, "Rating must be at least 0")
-    .max(5, "Rating cannot exceed 5")
-    .default(0),
 
   isFeatured: Yup.boolean().default(false),
 

@@ -36,6 +36,8 @@ const Alert = ({ children, setIsOpen, isOpen }) => {
           right: "20px",
           color: "#fff",
           cursor: "pointer",
+          zIndex: "2",
+          bgcolor: "#00000075",
         }}
         onClick={() => setIsOpen(false)}
       >

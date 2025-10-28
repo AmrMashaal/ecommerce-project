@@ -65,7 +65,6 @@ const productSchema = new mongoose.Schema(
     shipping: {
       weight: Number, // in grams
       dimensions: {
-        length: Number,
         width: Number,
         height: Number,
       },

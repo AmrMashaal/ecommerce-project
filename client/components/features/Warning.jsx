@@ -1,5 +1,6 @@
 import { WarningAmber } from "@mui/icons-material";
 import { Box, Button, Typography } from "@mui/material";
+import { useEffect } from "react";
 
 const Warning = ({
   message,
@@ -9,6 +10,13 @@ const Warning = ({
   onDelete,
   id,
 }) => {
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = "auto";
+    }
+  }, []);
   return (
     <Box
       position="fixed"

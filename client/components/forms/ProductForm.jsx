@@ -10,12 +10,51 @@ import {
 import { useFormik } from "formik";
 import { useState } from "react";
 import ProductSchema from "../../validations/ProductSchema.js";
+import { useEffect } from "react";
+import api from "../../api.js";
 
 const ProductForm = () => {
   const [loading, setLoading] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [imagesPreview, setImagesPreview] = useState([]);
 
-  const onSubmit = (values) => {
-    console.log("Form Values:", values);
+  const onSubmit = async (values) => {
+    const formData = new FormData();
+
+    for (const key in values) {
+      if (key === "images") {
+        Array.from(values.images).forEach((file) => {
+          formData.append("images", file);
+        });
+      } else if (key === "shipping") {
+        formData.append("shipping[weight]", values.shipping.weight);
+        formData.append(
+          "shipping[dimensions][width]",
+          values.shipping.dimensions.width
+        );
+        formData.append(
+          "shipping[dimensions][height]",
+          values.shipping.dimensions.height
+        );
+      } else {
+        formData.append(key, values[key]);
+      }
+    }
+
+    setLoading(true);
+    try {
+      const res = await api.post("/api/v1/products/", formData);
+      console.log("Product created successfully:", res.data);
+
+      formik.resetForm();
+      setImagesPreview([]);
+    } catch (error) {
+      if (import.meta.env.VITE_NODE_ENV === "development") {
+        console.error(error);
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   const formik = useFormik({
@@ -34,18 +73,38 @@ const ProductForm = () => {
       shipping: {
         weight: 0,
         dimensions: {
-          length: 0,
           width: 0,
           height: 0,
         },
       },
-      averageRating: 0,
       isFeatured: false,
       status: "active",
     },
     validationSchema: ProductSchema,
-    onSubmit: (values) => onSubmit(values, setLoading),
+    onSubmit: (values) => onSubmit(values),
   });
+
+  const fetchCategories = async () => {
+    try {
+      const res = await api.get("/api/v1/categories/");
+
+      res.data.map((category) => {
+        return category.parentCategory
+          ? setCategories((prev) => [
+              ...prev,
+              category.parentCategory.name,
+              category.name,
+            ])
+          : setCategories((prev) => [...prev, category.name]);
+      });
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
 
   return (
     <Box>
@@ -123,7 +182,11 @@ const ProductForm = () => {
             required
           >
             <MenuItem value="">Select Category</MenuItem>
-            []
+            {categories?.map((category, index) => (
+              <MenuItem key={index} value={category}>
+                {category}
+              </MenuItem>
+            ))}
           </TextField>
 
           {/* Price */}
@@ -195,23 +258,21 @@ const ProductForm = () => {
           </TextField>
 
           {/* Image Upload (Cloudinary later) */}
-          <Box sx={{ gridColumn: "span 2" }}>
-            <Typography fontSize="14px" mb={1}>
-              Product Images
-            </Typography>
-            <input
-              type="file"
-              name="images"
-              multiple
-              accept="image/*"
-              onChange={(e) => formik.setFieldValue("images", e.target.files)}
-            />
-            {formik.touched.images && formik.errors.images && (
-              <Typography color="error" fontSize="13px">
-                {formik.errors.images}
-              </Typography>
-            )}
-          </Box>
+          <TextField
+            name="images"
+            type="file"
+            inputProps={{ multiple: true }}
+            onChange={(e) =>
+              formik.setFieldValue("images", e.currentTarget.files)
+            }
+            onBlur={formik.handleBlur}
+            helperText={formik.touched.images && formik.errors.images}
+            error={formik.touched.images && Boolean(formik.errors.images)}
+            required
+            sx={{
+              gridColumn: "span 2",
+            }}
+          />
         </Box>
 
         {/* Submit Button */}

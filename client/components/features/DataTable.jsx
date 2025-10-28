@@ -1,14 +1,19 @@
 import { Box, Button, Typography } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { Add, DeleteOutline, EditSquare } from "@mui/icons-material";
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import Warning from "./Warning";
 import Alert from "./Alert";
-import SignupForm from "../forms/SignupForm";
-import EditUserForm from "../forms/EditUserForm";
-import ProductForm from "../forms/ProductForm";
 
 const DataTable = ({ columns, rows, title, onEdit, onDelete, loading }) => {
+  const FormComponent = lazy(() =>
+    import(`../forms/${title.split("").slice(0, -1).join("")}Form`)
+  );
+
+  const EditFormComponent = lazy(() =>
+    import(`../forms/Edit${title.split("").slice(0, -1).join("")}Form`)
+  );
+
   const [isWarning, setIsWarning] = useState(false);
   const [isAddNew, setIsAddNew] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
@@ -93,33 +98,25 @@ const DataTable = ({ columns, rows, title, onEdit, onDelete, loading }) => {
         />
       )}
 
-      {isAddNew && title === "Users" ? (
-        <Alert isOpen={isAddNew} setIsOpen={setIsAddNew}>
-          <SignupForm isFromAdmin={true} />
-        </Alert>
-      ) : isAddNew && title === "Products" ? (
-        <Alert isOpen={isAddNew} setIsOpen={setIsAddNew}>
-          <ProductForm />
-        </Alert>
-      ) : null}
+      {isAddNew && (
+        <Suspense>
+          <Alert setIsOpen={setIsAddNew} isOpen={isAddNew}>
+            <FormComponent setIsOpen={setIsAddNew} onSubmit={onEdit} />
+          </Alert>
+        </Suspense>
+      )}
 
-      {isEdit && title === "Users" ? (
-        <Alert isOpen={isEdit} setIsOpen={setIsEdit}>
-          <EditUserForm
-            initialValues={selectedRow}
-            onSubmit={onEdit}
-            setIsEdit={setIsEdit}
-          />
-        </Alert>
-      ) : isEdit && title === "Products" ? (
-        <Alert isOpen={isEdit} setIsOpen={setIsEdit}>
-          <EditProductForm
-            initialValues={selectedRow}
-            onSubmit={onEdit}
-            setIsEdit={setIsEdit}
-          />
-        </Alert>
-      ) : null}
+      {isEdit && (
+        <Suspense>
+          <Alert setIsOpen={setIsEdit} isOpen={isEdit}>
+            <EditFormComponent
+              initialValues={selectedRow}
+              setIsEdit={setIsEdit}
+              onSubmit={onEdit}
+            />
+          </Alert>
+        </Suspense>
+      )}
     </Box>
   );
 };
