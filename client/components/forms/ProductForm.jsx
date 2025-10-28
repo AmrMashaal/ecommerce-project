@@ -56,7 +56,7 @@ const ProductForm = () => {
       setLoading(false);
     }
   };
-console.log("this is from second branch")
+ 
   const formik = useFormik({
     initialValues: {
       name: "",
