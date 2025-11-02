@@ -55,7 +55,7 @@ const productSchema = new mongoose.Schema(
       },
     ],
     variants: [
-      {
+      { 
         color: String,
         size: String,
         stock: { type: Number, default: 0 },

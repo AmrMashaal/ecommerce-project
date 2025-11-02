@@ -23,7 +23,9 @@ const App = () => {
 
         dispatch(setLogin({ user: res.data }));
       } catch (error) {
-        console.error("Error fetching user data:", error);
+        if (import.meta.env.VITE_NODE_ENV === "development") {
+          console.error("Error fetching user data:", error);
+        }
       }
     };
 
@@ -56,7 +58,11 @@ const App = () => {
         <Route
           path="/admin/products"
           element={
-            user && user.role === "admin" ? <AdminProducts /> : <Navigate to="/" />
+            user && user.role === "admin" ? (
+              <AdminProducts />
+            ) : (
+              <Navigate to="/" />
+            )
           }
         />
         <Route

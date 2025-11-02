@@ -29,33 +29,36 @@ const Alert = ({ children, setIsOpen, isOpen }) => {
         onClick={() => setIsOpen(false)}
       />
 
-      <IconButton
-        sx={{
-          position: "absolute",
-          top: "20px",
-          right: "20px",
-          color: "#fff",
-          cursor: "pointer",
-          zIndex: "2",
-          bgcolor: "#00000075",
-        }}
-        onClick={() => setIsOpen(false)}
-      >
-        <Close />
-      </IconButton>
-
       <Box
         bgcolor="#ffffffff"
         p="30px"
         borderRadius="8px"
         boxShadow="0 2px 10px rgba(0,0,0,0.1)"
-        textAlign="center"
         width="500px"
         maxWidth="90%"
         maxHeight="90%"
         overflow="auto"
         zIndex="1"
+        position="relative"
       >
+        <IconButton
+          sx={{
+            color: "#000",
+            cursor: "pointer",
+            zIndex: "2",
+            position: "sticky",
+            top: "0px",
+            left: "100%",
+            mb: "10px",
+            bgcolor: "#ffffff",
+            borderRadius: "50%",
+            border: "1px solid #ccc",
+          }}
+          onClick={() => setIsOpen(false)}
+        >
+          <Close sx={{fontSize: "20px"}}/>
+        </IconButton>
+
         {children}
       </Box>
     </Box>

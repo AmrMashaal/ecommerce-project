@@ -2,6 +2,12 @@ import express from "express";
 import protect from "../middlewares/protect.js";
 import admin from "../middlewares/admin.js";
 import {
+  adminLimiter,
+  generalLimiter,
+  createUpdateLimiter,
+  deleteLimiter,
+} from "../middlewares/limiter.js";
+import {
   getAllUsers,
   deleteUser,
   getMe,
@@ -10,11 +16,11 @@ import {
 
 const router = express.Router();
 
-router.get("/dashboard-users", protect, admin, getAllUsers);
-router.get("/get-me", protect, getMe);
+router.get("/dashboard-users", protect, admin, adminLimiter, getAllUsers);
+router.get("/get-me", protect, generalLimiter, getMe);
 
-router.put("/update-user/:id", protect, admin, updateUser);
+router.put("/update-user/:id", protect, admin, createUpdateLimiter, updateUser);
 
-router.delete("/:id", protect, admin, deleteUser);
+router.delete("/:id", protect, admin, deleteLimiter, deleteUser);
 
 export default router;

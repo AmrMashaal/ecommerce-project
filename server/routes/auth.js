@@ -1,5 +1,9 @@
 import express from "express";
-import { authLimiter } from "../middlewares/limiter.js";
+import {
+  authLimiter,
+  generalLimiter,
+  emailLimiter,
+} from "../middlewares/limiter.js";
 import {
   signup,
   signupValidate,
@@ -10,12 +14,12 @@ import {
 
 const router = express.Router();
 
-router.post("/signup", authLimiter, signup);
+router.post("/signup", emailLimiter, signup);
 router.post("/validate-signup", authLimiter, signupValidate);
 
 router.post("/login", authLimiter, login);
-router.post("/logout", authLimiter, logout);
+router.post("/logout", generalLimiter, logout);
 
-router.post("/refresh-token", authLimiter, refreshToken);
+router.post("/refresh-token", generalLimiter, refreshToken);
 
 export default router;

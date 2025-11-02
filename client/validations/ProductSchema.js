@@ -3,7 +3,7 @@ import * as Yup from "yup";
 export const ProductSchema = Yup.object({
   name: Yup.string()
     .trim()
-    .max(150, "Name cannot exceed 150 characters")
+    .max(150, "Name cannot exceed 150 characters") 
     .required("Product name is required"),
 
   slug: Yup.string()
