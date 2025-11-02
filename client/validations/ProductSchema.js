@@ -3,7 +3,7 @@ import * as Yup from "yup";
 export const ProductSchema = Yup.object({
   name: Yup.string()
     .trim()
-    .max(150, "Name cannot exceed 150 characters") 
+    .max(150, "Name cannot exceed 150 characters")
     .required("Product name is required"),
 
   slug: Yup.string()
@@ -37,16 +37,7 @@ export const ProductSchema = Yup.object({
 
   sold: Yup.number().min(0, "Sold quantity cannot be negative").default(0),
 
-  images: Yup.array()
-    .of(
-      Yup.object({
-        url: Yup.string()
-          .url("Invalid image URL")
-          .required("Image URL is required"),
-        alt: Yup.string().optional(),
-      })
-    )
-    .min(1, "At least one image is required"),
+  images: Yup.array().optional(), 
 
   variants: Yup.array()
     .of(

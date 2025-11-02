@@ -50,44 +50,47 @@ const ProductForm = () => {
   });
 
   const onSubmit = async (values, { resetForm }) => {
+    if (imageFiles.length === 0) {
+      setToast({
+        open: true,
+        message: "Please upload at least one product image.",
+        severity: "warning",
+      });
+      return;
+    }
+
     const formData = new FormData();
 
-    for (const key in values) {
-      if (key === "images") {
-        Array.from(imageFiles).forEach((file) => {
-          formData.append("images", file);
-        });
-      } else if (key === "shipping") {
-        formData.append("shipping[weight]", values.shipping.weight);
+    formData.append("name", values.name);
+    formData.append("slug", values.slug);
+    formData.append("description", values.description);
+    formData.append("brand", values.brand);
+    formData.append("category", values.category);
+    formData.append("price", values.price);
+    formData.append("discount", values.discount);
+    formData.append("stock", values.stock);
+    formData.append("isFeatured", values.isFeatured);
+    formData.append("status", values.status);
 
-        formData.append(
-          "shipping[dimensions][width]",
-          values.shipping.dimensions.width
-        );
+    imageFiles.forEach((file) => {
+      formData.append("images", file);
+    });
 
-        formData.append(
-          "shipping[dimensions][height]",
-          values.shipping.dimensions.height
-        );
-      } else if (key === "variants") {
-        values.variants.forEach((variant, index) => {
-          formData.append(`variants[${index}][color]`, variant.color);
-          formData.append(`variants[${index}][size]`, variant.size);
-          formData.append(`variants[${index}][stock]`, variant.stock);
-          formData.append(`variants[${index}][price]`, variant.price);
-        });
-      } else {
-        formData.append(key, values[key]);
-      }
+    if (values.variants && values.variants.length > 0) {
+      formData.append("variants", JSON.stringify(values.variants));
+    }
+
+    if (values.shipping) {
+      formData.append("shipping", JSON.stringify(values.shipping));
     }
 
     setLoading(true);
     try {
-      await api.post("/api/v1/products/", formData);
+      const response = await api.post("/api/v1/products/", formData);
 
       setToast({
         open: true,
-        message: "Product created successfully!",
+        message: response.data.message || "Product created successfully!",
         severity: "success",
       });
 
@@ -98,6 +101,7 @@ const ProductForm = () => {
       const errorMessage =
         error.response?.data?.message ||
         "Failed to create product. Please try again.";
+
       setToast({
         open: true,
         message: errorMessage,
@@ -116,16 +120,15 @@ const ProductForm = () => {
     try {
       const res = await api.get("/api/v1/categories/");
 
-      // Efficiently build categories array
-      const categoryNames = [];
+      const categoryList = [];
+
       res.data.forEach((category) => {
-        if (category.parentCategory) {
-          categoryNames.push(category.parentCategory.name, category.name);
-        } else {
-          categoryNames.push(category.name);
-        }
+        categoryList.push({
+          id: category._id,
+          name: category.name,
+        });
       });
-      setCategories([...new Set(categoryNames)]);
+      setCategories(categoryList);
     } catch (error) {
       setToast({
         open: true,
@@ -256,9 +259,9 @@ const ProductForm = () => {
                 required
               >
                 <MenuItem value="">Select Category</MenuItem>
-                {categories?.map((category, index) => (
-                  <MenuItem key={index} value={category}>
-                    {category}
+                {categories?.map((category) => (
+                  <MenuItem key={category.id} value={category.id}>
+                    {category.name}
                   </MenuItem>
                 ))}
               </TextField>
@@ -333,8 +336,6 @@ const ProductForm = () => {
                 <MenuItem value="draft">Draft</MenuItem>
               </TextField>
 
-              {/* Image Upload (Cloudinary later) */}
-
               <Box
                 {...getRootProps()}
                 sx={{
@@ -357,7 +358,7 @@ const ProductForm = () => {
               </Box>
             </Box>
 
-            {/* ✅ Preview section */}
+            {/* Preview section */}
             <Box
               sx={{
                 display: "flex",

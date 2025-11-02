@@ -36,7 +36,7 @@ const productSchema = new mongoose.Schema(
       min: 0,
     },
     discount: {
-      type: Number, // percentage (0–100)
+      type: Number,  
       default: 0,
     },
     stock: {
@@ -51,11 +51,12 @@ const productSchema = new mongoose.Schema(
     images: [
       {
         url: { type: String, required: true },
-        alt: { type: String },
+        alt: { type: String, default: "Product image" }, 
+        publicId: { type: String, required: true },
       },
     ],
     variants: [
-      { 
+      {
         color: String,
         size: String,
         stock: { type: Number, default: 0 },
@@ -63,7 +64,7 @@ const productSchema = new mongoose.Schema(
       },
     ],
     shipping: {
-      weight: Number, // in grams
+      weight: Number, 
       dimensions: {
         width: Number,
         height: Number,

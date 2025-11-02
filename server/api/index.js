@@ -9,6 +9,7 @@ import rateLimit from "express-rate-limit";
 import authRoutes from "../routes/auth.js";
 import userRoutes from "../routes/user.js";
 import categoryRoutes from "../routes/category.js";
+import productRoutes from "../routes/product.js";
 
 dotenv.config();
 
@@ -41,5 +42,6 @@ app.use(globalLimiter);
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/categories", categoryRoutes);
+app.use("/api/v1/products", productRoutes);
 
 export default app;
